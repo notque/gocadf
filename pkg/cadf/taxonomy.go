@@ -1,95 +1,97 @@
 package cadf
 
-// IsValidTypeURI that matches CADF Taxonomy.
-// Was a nice idea, but I need to check if each one starts with...
-func IsValidTypeURI(TypeURI string) bool {
-    switch TypeURI {
-    case
-		"storage",
-		"storage/node",
-		"storage/volume",
-		"storage/memory",
-		"storage/container",
-		"storage/directory",
-		"storage/database",
-		"storage/queue",
-		"compute",
-		"compute/node",
-		"compute/cpu",
-		"compute/machine",
-		"compute/process",
-		"compute/thread",
-		"network",
-		"network/node",
-		"network/node/host",
-		"network/connection",
-		"network/domain",
-		"network/cluster",
-		"service",
-		"service/oss",
-		"service/bss",
-		"service/bss/metering",
-		"service/composition",
-		"service/compute",
-		"service/database",
-		"service/security",
-		"service/security/keymanager",
-		"service/security/account",
-		"service/security/account/user",
-		"service/security/audit/filter",
-		"service/storage",
-		"service/storage/block",
-		"service/storage/image",
-		"service/storage/object",
-		"service/network",
-		"data",
-		"data/message",
-		"data/workload",
-		"data/workload/app",
-		"data/workload/service",
-		"data/workload/task",
-		"data/workload/job",
-		"data/file",
-		"data/file/catalog",
-		"data/file/log",
-		"data/template",
-		"data/package",
-		"data/image",
-		"data/module",
-		"data/config",
-		"data/directory",
-		"data/database",
-		"data/security",
-		"data/security/account",
-		"data/security/credential",
-		"data/security/domain",
-		"data/security/endpoint",
-		"data/security/group",
-		"data/security/identity",
-		"data/security/key",
-		"data/security/license",
-		"data/security/policy",
-		"data/security/profile",
-		"data/security/project",
-		"data/security/region",
-		"data/security/role",
-		"data/security/service",
-		"data/security/trust",
-		"data/security/account/user",
-		"data/security/account/user/privilege",
-		"data/database/alias",
-		"data/database/catalog",
-		"data/database/constraints",
-		"data/database/index",
-		"data/database/instance",
-		"data/database/key",
-		"data/database/routine",
-		"data/database/schema",
-		"data/database/sequence",
-		"data/database/table",
-		"data/database/trigger",
-		"data/database/view":
-        return true
-    }
+import (
+	"strings"
+)
+
+// IsTypeURI that matches CADF Taxonomy. Full CADF Taxonomy
+// available in the documentation. Match Prefix
+func IsTypeURI(TypeURI string) bool {
+	validTypeURIs := []string{"storage", "compute", "network", "data", "service"}
+
+	for _, tu := range validTypeURIs {
+		if strings.HasPrefix(TypeURI, tu) {
+			return true
+		}
+	}
     return false
+}
+
+//IsAction validates a CADF Action: Exact match
+func IsAction(Action string) bool {
+	validActions := []string{
+		"backup",
+		"capture",
+		"create",
+		"configure",
+		"read",
+		"list",
+		"update",
+		"delete",
+		"monitor",
+		"start",
+		"stop",
+		"deploy",
+		"undeploy",
+		"enable",
+		"disable",
+		"send",
+		"receive",
+		"authenticate",
+		"authenticate/login",
+		"revoke",
+		"renew",
+		"restore",
+		"evaluate",
+		"allow",
+		"deny",
+		"notify",
+		"unknown",
+	}
+
+	for _, a := range validActions {
+		if Action == a {
+			return true
+		}
+	}
+    return false
+}
+
+//IsOutcome CADF Outcome: Exact Match
+func IsOutcome(outcome string) bool {
+	validOutcomes := []string{
+		"success",
+		"failure",
+		"pending",
+	}
+
+	for _, o := range validOutcomes {
+		if outcome == o {
+			return true
+		}
+	}
+    return false
+}
+
+//GetAction returns the Action for each http request method.
+func GetAction(req string) (action string) {
+	switch req {
+		case "get": 
+			action = "read"
+		case "head": 
+			action = "read"
+		case "post": 
+			action = "create"
+		case "put": 
+			action = "update"
+		case "delete": 
+			action = "delete"
+		case "patch": 
+			action = "update"
+		case "options": 
+			action = "read"
+		default: 
+			action = "unknown"
+	}
+	return action
 }

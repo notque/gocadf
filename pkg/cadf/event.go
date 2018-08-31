@@ -1,7 +1,6 @@
 package cadf
 
 import (
-	"fmt"
 	"net"
 	"time"
 	"net/http"
@@ -102,7 +101,9 @@ type EventParams struct {
 	DomainID     string
 	ProjectID    string
 	ServiceType  string
+	ServiceTypeURI string
 	ResourceName string
+	ResourceTypeURI string
 	RejectReason string
 }
 
@@ -137,19 +138,19 @@ func (p EventParams) NewEvent() Event {
 			DomainID:  p.Token.Context.Auth["domain_id"],
 			ProjectID: p.Token.Context.Auth["project_id"],
 			Host: Host{
-				Address: TryStripPort(p.Request.RemoteAddr),
+				Address: StripPort(p.Request.RemoteAddr),
 				Agent:   p.Request.Header.Get("User-Agent"),
 			},
 		},
 		Target: Resource{
-			TypeURI:   fmt.Sprintf("fix/%s/%s/me", p.ServiceType, p.ResourceName),
+			TypeURI:   p.ResourceTypeURI,
 			ID:        targetID,
 			DomainID:  p.DomainID,
 			ProjectID: p.ProjectID,
 		},
 		Observer: Resource{
-			TypeURI: "service/typeURI",
-			Name:    "nameofservice",
+			TypeURI: p.ServiceTypeURI,
+			Name:    p.ServiceType,
 			ID:      p.ObserverUUID,
 		},
 		RequestPath: p.Request.URL.String(),
@@ -162,8 +163,8 @@ func generateUUID() string {
 	return u.String()
 }
 
-//TryStripPort returns a host without the port number
-func TryStripPort(hostPort string) string {
+//StripPort returns a host without the port number
+func StripPort(hostPort string) string {
 	host, _, err := net.SplitHostPort(hostPort)
 	if err == nil {
 		return host

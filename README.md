@@ -1,2 +1,2 @@
-# gocadf
-go cadf library 
+* gocadf is a library for working with CADF
+
